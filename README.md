@@ -2,12 +2,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Google Gemini API](https://img.shields.io/badge/AI%20Engine-Google%20Gemini-8E75C2?logo=google&logoColor=white)](https://ai.google.dev/)
-[![Java](https://img.shields.io/badge/Backend-Java%20%2F%20Spring%20Boot-ED8B00?logo=openjdk&logoColor=white)](https://spring.io/)
+[![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express.js-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![MySQL](https://img.shields.io/badge/Database-MySQL-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![Architecture](https://img.shields.io/badge/Stack-PERN%20%2B%20AI-blue.svg)](https://github.com/sripallav/IntelliDB)
 
-> **IntelliDB** is an intelligent database querying platform that translates plain English business questions into syntactically accurate, secure, and optimized SQL queries, enabling non-technical stakeholders (HR, Operations, Executives, Managers) to retrieve real-time insights from relational databases without writing a single line of SQL.
+> **IntelliDB** is an intelligent database querying platform built on the **PERN + AI** stack (**P**ostgreSQL, **E**xpress.js, **R**eact.js, **N**ode.js, **AI** Google Gemini). It translates plain English business questions into syntactically accurate, secure, and optimized SQL queries, enabling non-technical stakeholders (HR, Operations, Executives, Managers) to retrieve real-time insights from relational databases without writing a single line of SQL.
 
 ---
 
@@ -25,19 +25,18 @@ Historically, these stakeholders must submit support tickets or email data analy
 
 ## 🚀 Key Features
 
-- **Natural Language to SQL (NL-to-SQL)**: Translates human language into standard ANSI SQL for PostgreSQL and MySQL using Google Gemini API.
-- **Dynamic Schema Introspection**: Reads catalog metadata (table names, columns, data types, primary/foreign keys) at runtime so prompts always match the actual schema.
+- **Natural Language to SQL (NL-to-SQL)**: Translates human language into standard ANSI SQL for PostgreSQL using the Google Gemini API.
+- **Dynamic Schema Introspection**: Reads catalog metadata (`information_schema.tables`, `columns`, data types, foreign keys) at runtime so prompts always match the actual schema.
 - **Enterprise Security & Zero Data Leakage**:
   - **No sensitive row data is sent to the LLM** — only table schema definitions and column names are shared.
   - **Read-Only Guardrails**: Strictly rejects destructive commands (`DROP`, `DELETE`, `TRUNCATE`, `ALTER`, `UPDATE`, `INSERT`).
   - **SQL Injection Defense**: Sanitizes inputs and validates generated AST queries before execution.
-- **Multi-Database Support**: Easily connect to either PostgreSQL or MySQL via configurable JDBC connection strings.
 - **Query Explanation & Performance**: Explains *how* and *why* the query works, providing execution time and row counts.
 - **Interactive UI**: Responsive React interface with tabular sorting, pagination, and CSV data export.
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ System Architecture (PERN + AI)
 
 ```text
 +-----------------------+
@@ -46,39 +45,39 @@ Historically, these stakeholders must submit support tickets or email data analy
             | (Plain English Query)
             v
 +-----------------------+
-|   React Frontend UI   |  Interactive Query Console & Results Table
+|   React Frontend UI   |  Interactive Query Console & Results Table (React + Vite)
 +-----------+-----------+
             | (REST API Request)
             v
 +-------------------------------------------------------+
-|                IntelliDB Backend Engine               |
+|             Node.js + Express.js Backend              |
 |                                                       |
 |  1. Schema Extractor: Reads DB catalog metadata       |
 |  2. Prompt Builder: Merges user query + DB schema     |
 |  3. Gemini AI Engine: Synthesizes optimized SQL       |
 |  4. Security Validator: Verifies READ-ONLY & Safe AST |
-|  5. Query Runner: Executes query via JDBC Driver      |
+|  5. Query Runner: Executes query via 'pg' pool        |
 +---------------------------+---------------------------+
             |               |
             | (Safe SQL)    | (LLM Inference)
             v               v
     +---------------+  +---------------------+
-    | PostgreSQL /  |  |  Google Gemini API  |
-    | MySQL Cluster |  +---------------------+
+    |  PostgreSQL   |  |  Google Gemini API  |
+    |   Database    |  +---------------------+
     +---------------+
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack: PERN + AI
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | React.js, Vite, Tailwind CSS / Bootstrap, Axios |
-| **Backend** | Java 17+, Spring Boot (or Node.js / Express), JDBC / Hibernate |
-| **Databases** | PostgreSQL 15+, MySQL 8.0+ |
-| **AI / LLM Engine** | Google Gemini API (`gemini-1.5-flash` / `gemini-pro`) |
-| **Testing & Tools** | Postman, JUnit, Git, GitHub |
+| Layer | Component | Description |
+|---|---|---|
+| **P** | **PostgreSQL** | Relational database holding organization data and schema definitions |
+| **E** | **Express.js** | Fast, minimalist backend web framework for Node.js handling REST APIs |
+| **R** | **React.js** | Interactive user interface built with React 18, Vite, and modern CSS |
+| **N** | **Node.js** | JavaScript runtime environment executing backend business logic |
+| **AI**| **Google Gemini** | Generative AI engine (`gemini-1.5-flash` / `gemini-2.0-flash`) for Text-to-SQL translation |
 
 ---
 
@@ -95,8 +94,8 @@ To prevent accidental data corruption or malicious attacks, IntelliDB implements
 ## 💻 Getting Started
 
 ### Prerequisites
-- Java 17+ (or Node.js 18+)
-- PostgreSQL or MySQL installed locally or hosted (e.g., Supabase, Neon, AWS RDS)
+- Node.js (v18.x or later)
+- PostgreSQL installed locally or hosted (e.g., Supabase, Neon, AWS RDS)
 - Google Gemini API Key ([Get one at Google AI Studio](https://aistudio.google.com/))
 
 ### Installation
@@ -108,30 +107,27 @@ To prevent accidental data corruption or malicious attacks, IntelliDB implements
    ```
 
 2. **Configure Environment Variables:**
-   Create an `.env` or `application.properties` file:
+   Create an `.env` file in the `server` directory:
    ```properties
-   # AI Configuration
+   PORT=5000
    GEMINI_API_KEY=your_gemini_api_key_here
 
-   # Database Connection
-   DB_TYPE=postgresql
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=company_db
-   DB_USER=postgres
-   DB_PASSWORD=your_password
+   # PostgreSQL Connection
+   PG_HOST=localhost
+   PG_PORT=5432
+   PG_DATABASE=company_db
+   PG_USER=postgres
+   PG_PASSWORD=your_password
    ```
 
-3. **Run Backend Service:**
+3. **Run Backend Service (Node.js + Express):**
    ```bash
-   # If Java / Spring Boot
-   ./mvnw spring-boot:run
-
-   # If Node.js backend
-   npm install && npm start
+   cd server
+   npm install
+   npm run dev
    ```
 
-4. **Run Frontend Application:**
+4. **Run Frontend Application (React + Vite):**
    ```bash
    cd client
    npm install
@@ -149,17 +145,6 @@ To prevent accidental data corruption or malicious attacks, IntelliDB implements
 | *"Who are the top 5 highest earning employees?"* | `SELECT id, name, department, salary FROM employees ORDER BY salary DESC LIMIT 5;` | Displays clean table of top 5 employees with salaries. |
 | *"Count how many projects each department is handling."* | `SELECT d.dept_name, COUNT(p.id) AS project_count FROM departments d LEFT JOIN projects p ON d.id = p.dept_id GROUP BY d.dept_name;` | Table with department names and active project counts. |
 | *"Delete all inactive users"* | **BLOCKED BY SECURITY GUARDRAIL** | Error: *"Write and delete operations are restricted. IntelliDB supports read-only queries."* |
-
----
-
-## 🗺️ Roadmap
-
-- [x] Natural language to ANSI SQL generation with Gemini API
-- [x] PostgreSQL & MySQL dynamic schema introspection
-- [x] Read-only execution safety guardrails & SQL injection defense
-- [ ] Automated chart generation (Bar/Pie charts) for query results
-- [ ] Export query results to Excel/PDF reports
-- [ ] Support for MongoDB / NoSQL aggregation pipelines
 
 ---
 
